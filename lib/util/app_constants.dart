@@ -2,7 +2,7 @@ import 'package:sixam_mart_delivery/data/model/response/language_model.dart';
 import 'package:sixam_mart_delivery/util/images.dart';
 
 class AppConstants {
-  static const String APP_NAME = 'وفرلي Delivery';
+  static const String APP_NAME = 'Atayer Delivery';
   static const double APP_VERSION = 1.4;
 
   static const String BASE_URL = 'https://lest.lisre.online';
