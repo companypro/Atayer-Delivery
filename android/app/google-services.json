@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "377325021790",
+    "project_id": "sixam-mart-delivery-5d509",
+    "storage_bucket": "sixam-mart-delivery-5d509.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:377325021790:android:52db224f1c8cb5950d62cf",
+        "android_client_info": {
+          "package_name": "com.sixamtech.sixam_mart_delivery"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAPzJWLu2MyBtNQeDVStosTTZFP908CLQY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
