@@ -70,7 +70,7 @@ class AuthRepo {
   Future<String> _saveDeviceToken() async {
     String _deviceToken = '';
     if(!GetPlatform.isWeb) {
-      _deviceToken = (await FirebaseMessaging.instance.getToken())!;
+      _deviceToken =  '';
     }
     if (_deviceToken != null) {
       print('--------Device Token---------- '+_deviceToken);

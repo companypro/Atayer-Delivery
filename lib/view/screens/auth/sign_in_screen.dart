@@ -162,23 +162,23 @@ class SignInScreen extends StatelessWidget {
     String _phone = phoneCtlr.text.trim();
     String _password = passCtlr.text.trim();
 
-    String _numberWithCountryCode = countryCode+_phone;
+    String _numberWithCountryCode = countryCode + _phone;
     bool _isValid = false;
     try {
       PhoneNumber phoneNumber = await PhoneNumber.parse(_numberWithCountryCode);
       _numberWithCountryCode = '+' + phoneNumber.countryCode + phoneNumber.nsn;
       _isValid = true;
-    }catch(e) {}
+    } catch (e) {}
 
     if (_phone.isEmpty) {
       showCustomSnackBar('enter_phone_number'.tr);
-    }else if (!_isValid) {
+    } else if (!_isValid) {
       showCustomSnackBar('invalid_phone_number'.tr);
-    }else if (_password.isEmpty) {
+    } else if (_password.isEmpty) {
       showCustomSnackBar('enter_password'.tr);
-    }else if (_password.length < 6) {
+    } else if (_password.length < 6) {
       showCustomSnackBar('password_should_be'.tr);
-    }else {
+    } else {
       authController.login(_numberWithCountryCode, _password).then((status) async {
         if (status.isSuccess) {
           if (authController.isActiveRememberMe) {
@@ -188,7 +188,7 @@ class SignInScreen extends StatelessWidget {
           }
           await Get.find<AuthController>().getProfile();
           Get.offAllNamed(RouteHelper.getInitialRoute());
-        }else {
+        } else {
           showCustomSnackBar(status.message);
         }
       });

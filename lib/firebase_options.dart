@@ -48,7 +48,7 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions web = FirebaseOptions(
     apiKey: 'AIzaSyBFgGfgpti4rOE9boF0p59lvppYHw5D7_w',
-    appId: '1:377325021790:web:3eedf3e01a98dc2e0d62cf',
+    appId: '1:208705892915:web:65bd1b0f68018b32e8e946',
     messagingSenderId: '377325021790',
     projectId: 'sixam-mart-delivery-5d509',
     authDomain: 'sixam-mart-delivery-5d509.firebaseapp.com',
@@ -58,7 +58,7 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions android = FirebaseOptions(
     apiKey: 'AIzaSyAPzJWLu2MyBtNQeDVStosTTZFP908CLQY',
-    appId: '1:377325021790:android:52db224f1c8cb5950d62cf',
+    appId: '1:208705892915:android:5883702276d672a5e8e946',
     messagingSenderId: '377325021790',
     projectId: 'sixam-mart-delivery-5d509',
     storageBucket: 'sixam-mart-delivery-5d509.appspot.com',
@@ -66,7 +66,7 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions ios = FirebaseOptions(
     apiKey: 'AIzaSyBO9ujAM_S6cA-azmsJQhNIMipkF_XpS7U',
-    appId: '1:377325021790:ios:ac47d6a7e3aef3b10d62cf',
+    appId: '1:208705892915:ios:d755a0e3c0a05873e8e946',
     messagingSenderId: '377325021790',
     projectId: 'sixam-mart-delivery-5d509',
     storageBucket: 'sixam-mart-delivery-5d509.appspot.com',
