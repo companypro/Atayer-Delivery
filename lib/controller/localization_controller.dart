@@ -29,11 +29,10 @@ class LocalizationController extends GetxController implements GetxService {
     }else {
       _isLtr = true;
     }
-    apiClient.updateHeader(
-      sharedPreferences.getString(AppConstants.TOKEN)!, locale.languageCode,
-    );
     saveLanguage(_locale);
-
+    apiClient.updateHeader(
+      sharedPreferences.getString(AppConstants.TOKEN)?? '', locale.languageCode,
+    );
     update();
   }
 

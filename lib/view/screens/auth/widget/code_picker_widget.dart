@@ -208,7 +208,7 @@ class CodePickerWidgetState extends State<CodePickerWidget> {
     if (oldWidget.initialSelection != widget.initialSelection) {
       if (widget.initialSelection != null) {
         selectedItem = elements.firstWhere(
-            (e) => (e.code?.toUpperCase() == widget.initialSelection?.toUpperCase()) || (e.dialCode == widget.initialSelection) || (e.name?.toUpperCase() == widget.initialSelection?.toUpperCase()),
+                (e) => (e.code?.toUpperCase() == widget.initialSelection?.toUpperCase()) || (e.dialCode == widget.initialSelection) || (e.name?.toUpperCase() == widget.initialSelection?.toUpperCase()),
             orElse: () => elements[0]);
       } else {
         selectedItem = elements[0];
@@ -223,7 +223,7 @@ class CodePickerWidgetState extends State<CodePickerWidget> {
 
     if (widget.initialSelection != null) {
       selectedItem = elements.firstWhere(
-          (e) => (e.code?.toUpperCase() == widget.initialSelection?.toUpperCase()) || (e.dialCode == widget.initialSelection) || (e.name?.toUpperCase() == widget.initialSelection?.toUpperCase()),
+              (e) => (e.code?.toUpperCase() == widget.initialSelection?.toUpperCase()) || (e.dialCode == widget.initialSelection) || (e.name?.toUpperCase() == widget.initialSelection?.toUpperCase()),
           orElse: () => elements[0]);
     } else {
       selectedItem = elements[0];

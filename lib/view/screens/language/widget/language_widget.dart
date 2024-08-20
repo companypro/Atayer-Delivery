@@ -44,7 +44,7 @@ class LanguageWidget extends StatelessWidget {
                 child: Image.asset(
                   languageModel.imageUrl!, width: 36, height: 36,
                   color: languageModel.languageCode == 'en' || languageModel.languageCode == 'ar'
-                      ? Theme.of(context).textTheme.bodyLarge?.color : null,
+                      ? Theme.of(context).textTheme.bodyLarge!.color! : null,
                 ),
               ),
               SizedBox(height: Dimensions.PADDING_SIZE_LARGE),

@@ -16,21 +16,21 @@ class OrderItemWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     String _addOnText = '';
-    orderDetails.addOns?.forEach((addOn) {
+    orderDetails.addOns!.forEach((addOn) {
       _addOnText = _addOnText + '${(_addOnText.isEmpty) ? '' : ',  '}${addOn.name} (${addOn.quantity})';
     });
 
-    String? _variationText = '';
+    String _variationText = '';
     if(orderDetails.variation!.length > 0) {
-      List<String>? _variationTypes = orderDetails.variation?[0].type?.split('-');
-      if(_variationTypes?.length == orderDetails.itemDetails?.choiceOptions?.length) {
+      List<String> _variationTypes = orderDetails.variation![0].type!.split('-');
+      if(_variationTypes.length == orderDetails.itemDetails!.choiceOptions!.length) {
         int _index = 0;
-        orderDetails.itemDetails?.choiceOptions?.forEach((choice) {
-          _variationText = (_variationText! + '${(_index == 0) ? '' : ',  '}${choice.title} - ${_variationTypes?[_index]}')!;
+        orderDetails.itemDetails!.choiceOptions!.forEach((choice) {
+          _variationText = _variationText + '${(_index == 0) ? '' : ',  '}${choice.title} - ${_variationTypes[_index]}';
           _index = _index + 1;
         });
       }else {
-        _variationText = orderDetails.itemDetails!.variations?[0].type;
+        _variationText = orderDetails.itemDetails!.variations![0].type!;
       }
     }
     
@@ -40,8 +40,8 @@ class OrderItemWidget extends StatelessWidget {
           borderRadius: BorderRadius.circular(Dimensions.RADIUS_SMALL),
           child: CustomImage(
             height: 50, width: 50, fit: BoxFit.cover,
-            image: '${order.itemCampaignId != null ? Get.find<SplashController>().configModel!.baseUrls?.campaignImageUrl
-                : Get.find<SplashController>().configModel!.baseUrls?.itemImageUrl}/${orderDetails.itemDetails?.image}',
+            image: '${order.itemCampaignId != null ? Get.find<SplashController>().configModel!.baseUrls!.campaignImageUrl
+                : Get.find<SplashController>().configModel!.baseUrls!.itemImageUrl}/${orderDetails.itemDetails!.image}',
           ),
         ),
         SizedBox(width: Dimensions.PADDING_SIZE_SMALL),
@@ -74,7 +74,7 @@ class OrderItemWidget extends StatelessWidget {
                   color: Theme.of(context).disabledColor,
                 ),
               )) : Expanded(child: SizedBox()),
-              ((Get.find<SplashController>().getModule(order.moduleType!).unit! && orderDetails.itemDetails?.unitType != null)
+              ((Get.find<SplashController>().getModule(order.moduleType!).unit! && orderDetails.itemDetails!.unitType != null)
               || (Get.find<SplashController>().configModel!.toggleVegNonVeg! && Get.find<SplashController>().getModule(order.moduleType!).vegNonVeg!)) ? Container(
                 padding: EdgeInsets.symmetric(vertical: Dimensions.PADDING_SIZE_EXTRA_SMALL, horizontal: Dimensions.PADDING_SIZE_SMALL),
                 decoration: BoxDecoration(
@@ -82,8 +82,8 @@ class OrderItemWidget extends StatelessWidget {
                   color: Theme.of(context).primaryColor,
                 ),
                 child: Text(
-                  Get.find<SplashController>().getModule(order.moduleType!).unit! ? orderDetails.itemDetails?.unitType ?? ''
-                      : orderDetails.itemDetails?.veg == 0 ? 'non_veg'.tr : 'veg'.tr,
+                  Get.find<SplashController>().getModule(order.moduleType!).unit! ? orderDetails.itemDetails!.unitType ?? ''
+                      : orderDetails.itemDetails!.veg == 0 ? 'non_veg'.tr : 'veg'.tr,
                   style: robotoRegular.copyWith(fontSize: Dimensions.FONT_SIZE_EXTRA_SMALL, color: Colors.white),
                 ),
               ) : SizedBox(),
@@ -111,7 +111,7 @@ class OrderItemWidget extends StatelessWidget {
           SizedBox(width: 60),
           Text('${'variations'.tr}: ', style: robotoMedium.copyWith(fontSize: Dimensions.FONT_SIZE_SMALL)),
           Flexible(child: Text(
-              _variationText!,
+              _variationText,
               style: robotoRegular.copyWith(fontSize: Dimensions.FONT_SIZE_SMALL, color: Theme.of(context).disabledColor,
           ))),
         ]),

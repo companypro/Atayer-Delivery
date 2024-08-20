@@ -20,19 +20,11 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-import '../../../helper/price_converter.dart';
-import '../../base/custom_text_field.dart';
-
 class OrderDetailsScreen extends StatelessWidget {
   final OrderModel orderModel;
   final bool? isRunningOrder;
   final int? orderIndex;
-
-  OrderDetailsScreen({
-    required this.orderModel,
-    this.isRunningOrder,
-    this.orderIndex,
-  });
+  OrderDetailsScreen({required this.orderModel, required this.isRunningOrder, required this.orderIndex});
 
   @override
   Widget build(BuildContext context) {
@@ -43,764 +35,278 @@ class OrderDetailsScreen extends StatelessWidget {
     bool _handover = orderModel.orderStatus == AppConstants.HANDOVER;
     bool _pickedUp = orderModel.orderStatus == AppConstants.PICKED_UP;
     bool _cod = orderModel.paymentMethod == 'cash_on_delivery';
-    // Defining missing variables
-    bool? _restConfModel =
-        Get.find<SplashController>().configModel!.orderConfirmationModel !=
-            'deliveryman';
-    bool _selfDelivery =
-        Get.find<AuthController>().profileModel!.type != 'zone_wise';
-    bool _showSlider =
-        (_cod && _accepted && !_restConfModel && !_selfDelivery) ||
-            _handover ||
-            _pickedUp ||
-            (_parcel && _accepted);
-    bool? _cancelPermission =
-        Get.find<SplashController>().configModel!.canceledByDeliveryman;
-
+    
+    bool _cancelPermission = Get.find<SplashController>().configModel!.canceledByDeliveryman!;
+    bool _selfDelivery = Get.find<AuthController>().profileModel!.type != 'zone_wise';
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
       print("onMessage: ${message.data}");
       Get.find<OrderController>().getCurrentOrders();
       String _type = message.data['type'];
-      if (isRunningOrder! && _type == 'order_status') {
+      if(isRunningOrder! && _type == 'order_status') {
         Get.back();
       }
     });
-
     Get.find<OrderController>().getOrderDetails(orderModel.id!, _parcel);
+    bool _restConfModel = Get.find<SplashController>().configModel!.orderConfirmationModel != 'deliveryman';
+    bool _showBottomView = (_parcel && _accepted) || _accepted || _confirmed || _processing || _handover 
+        || _pickedUp || isRunningOrder!;
+    bool _showSlider = (_cod && _accepted && !_restConfModel && !_selfDelivery) || _handover || _pickedUp
+        || (_parcel && _accepted);
 
-    bool _showBottomView = _handover || _pickedUp || _accepted;
-
-    print('***${orderModel.storeAddress}');
     return Scaffold(
       backgroundColor: Theme.of(context).cardColor,
       appBar: CustomAppBar(title: 'order_details'.tr),
       body: Padding(
         padding: EdgeInsets.all(Dimensions.PADDING_SIZE_SMALL),
         child: GetBuilder<OrderController>(builder: (orderController) {
-          Set<String> displayedStores = {};
+          return orderController.orderDetailsModel != null ? Column(children: [
 
-          return orderController.orderDetailsModel != null
-              ? Column(children: [
-                  Expanded(
-                      child: SingleChildScrollView(
-                    physics: BouncingScrollPhysics(),
-                    child: Column(children: [
-                      Row(children: [
-                        Text('${_parcel ? 'delivery_id'.tr : 'order_id'.tr}:',
-                            style: robotoRegular),
-                        SizedBox(width: Dimensions.PADDING_SIZE_EXTRA_SMALL),
-                        Text(orderModel.id.toString(), style: robotoMedium),
-                        SizedBox(width: Dimensions.PADDING_SIZE_EXTRA_SMALL),
-                        Expanded(child: SizedBox()),
-                        Container(
-                            height: 7,
-                            width: 7,
-                            decoration: BoxDecoration(
-                                shape: BoxShape.circle, color: Colors.green)),
-                        SizedBox(width: Dimensions.PADDING_SIZE_EXTRA_SMALL),
+            Expanded(child: SingleChildScrollView(
+              physics: BouncingScrollPhysics(),
+              child: Column(children: [
+
+                Row(children: [
+                  Text('${_parcel ? 'delivery_id'.tr : 'order_id'.tr}:', style: robotoRegular),
+                  SizedBox(width: Dimensions.PADDING_SIZE_EXTRA_SMALL),
+                  Text(orderModel.id.toString(), style: robotoMedium),
+                  SizedBox(width: Dimensions.PADDING_SIZE_EXTRA_SMALL),
+                  Expanded(child: SizedBox()),
+                  Container(height: 7, width: 7, decoration: BoxDecoration(shape: BoxShape.circle, color: Colors.green)),
+                  SizedBox(width: Dimensions.PADDING_SIZE_EXTRA_SMALL),
+                  Text(
+                    orderModel.orderStatus!.tr,
+                    style: robotoRegular,
+                  ),
+                ]),
+                SizedBox(height: Dimensions.PADDING_SIZE_LARGE),
+
+                Row(children: [
+                  Text('${_parcel ? 'charge_payer'.tr : 'item'.tr}:', style: robotoRegular),
+                  SizedBox(width: Dimensions.PADDING_SIZE_EXTRA_SMALL),
+                  Text(
+                    _parcel ? orderModel.chargePayer!.tr : orderController.orderDetailsModel.length.toString(),
+                    style: robotoMedium.copyWith(color: Theme.of(context).primaryColor),
+                  ),
+                  Expanded(child: SizedBox()),
+                  Container(
+                    padding: EdgeInsets.symmetric(horizontal: Dimensions.PADDING_SIZE_SMALL, vertical: Dimensions.PADDING_SIZE_EXTRA_SMALL),
+                    decoration: BoxDecoration(color: Theme.of(context).primaryColor, borderRadius: BorderRadius.circular(5)),
+                    child: Text(
+                      _cod ? 'cod'.tr : 'digitally_paid'.tr,
+                      style: robotoRegular.copyWith(fontSize: Dimensions.FONT_SIZE_EXTRA_SMALL, color: Theme.of(context).cardColor),
+                    ),
+                  ),
+                ]),
+                Divider(height: Dimensions.PADDING_SIZE_LARGE),
+                SizedBox(height: Dimensions.PADDING_SIZE_SMALL),
+
+                InfoCard(
+                  title: _parcel ? 'sender_details'.tr : 'store_details'.tr,
+                  address: _parcel ? orderModel.deliveryAddress! : DeliveryAddress(address: orderModel.storeAddress!),
+                  image: _parcel ? '' : '${Get.find<SplashController>().configModel!.baseUrls!.storeImageUrl}/${orderModel.storeLogo}',
+                  name: _parcel ? orderModel.deliveryAddress!.contactPersonName! : orderModel.storeName!,
+                  phone: _parcel ? orderModel.deliveryAddress!.contactPersonNumber! : orderModel.storePhone!,
+                  latitude: _parcel ? orderModel.deliveryAddress!.latitude! : orderModel.storeLat!,
+                  longitude: _parcel ? orderModel.deliveryAddress!.longitude! : orderModel.storeLng!,
+                  showButton: orderModel.orderStatus != 'delivered',
+                ),
+                SizedBox(height: Dimensions.PADDING_SIZE_LARGE),
+
+                InfoCard(
+                  title: _parcel ? 'receiver_details'.tr : 'customer_contact_details'.tr,
+                  address: _parcel ? orderModel.receiverDetails! : orderModel.deliveryAddress!,
+                  image: _parcel ? '' : orderModel.customer != null ? '${Get.find<SplashController>().configModel!.baseUrls!.customerImageUrl}/${orderModel.customer!.image}' : '',
+                  name: _parcel ? orderModel.receiverDetails!.contactPersonName! : orderModel.deliveryAddress!.contactPersonName!,
+                  phone: _parcel ? orderModel.receiverDetails!.contactPersonNumber! : orderModel.deliveryAddress!.contactPersonNumber!,
+                  latitude: _parcel ? orderModel.receiverDetails!.latitude! : orderModel.deliveryAddress!.latitude!,
+                  longitude: _parcel ? orderModel.receiverDetails!.longitude! : orderModel.deliveryAddress!.longitude!,
+                  showButton: orderModel.orderStatus != 'delivered',
+                ),
+                SizedBox(height: Dimensions.PADDING_SIZE_LARGE),
+
+                _parcel ? Container(
+                  padding: EdgeInsets.all(Dimensions.PADDING_SIZE_SMALL),
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).cardColor,
+                    borderRadius: BorderRadius.circular(Dimensions.RADIUS_SMALL),
+                    boxShadow: [BoxShadow(color: Colors.grey[Get.isDarkMode ? 700 : 200]!, spreadRadius: 1, blurRadius: 5)],
+                  ),
+                  child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                    Text('parcel_category'.tr, style: robotoRegular),
+                    SizedBox(height: Dimensions.PADDING_SIZE_EXTRA_SMALL),
+                    Row(children: [
+                      ClipOval(child: CustomImage(
+                        image: '${Get.find<SplashController>().configModel!.baseUrls!.parcelCategoryImageUrl}/${orderModel.parcelCategory!.image}',
+                        height: 35, width: 35, fit: BoxFit.cover,
+                      )),
+                      SizedBox(width: Dimensions.PADDING_SIZE_SMALL),
+                      Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                         Text(
-                          orderModel.orderStatus!.tr,
-                          style: robotoRegular,
+                          orderModel.parcelCategory!.name!, maxLines: 1, overflow: TextOverflow.ellipsis,
+                          style: robotoRegular.copyWith(fontSize: Dimensions.FONT_SIZE_SMALL),
                         ),
-                      ]),
-                      SizedBox(height: Dimensions.PADDING_SIZE_LARGE),
-                      Row(children: [
-                        Text('${_parcel ? 'charge_payer'.tr : 'item'.tr}:',
-                            style: robotoRegular),
-                        SizedBox(width: Dimensions.PADDING_SIZE_EXTRA_SMALL),
                         Text(
-                          _parcel
-                              ? orderModel.chargePayer!.tr
-                              : orderController.orderDetailsModel!.length
-                                  .toString(),
-                          style: robotoMedium.copyWith(
-                              color: Theme.of(context).primaryColor),
+                          orderModel.parcelCategory!.description!, maxLines: 1, overflow: TextOverflow.ellipsis,
+                          style: robotoRegular.copyWith(fontSize: Dimensions.FONT_SIZE_SMALL, color: Theme.of(context).disabledColor),
                         ),
-                        Expanded(child: SizedBox()),
-                        Container(
-                          padding: EdgeInsets.symmetric(
-                              horizontal: Dimensions.PADDING_SIZE_SMALL,
-                              vertical: Dimensions.PADDING_SIZE_EXTRA_SMALL),
-                          decoration: BoxDecoration(
-                              color: Theme.of(context).primaryColor,
-                              borderRadius: BorderRadius.circular(5)),
-                          child: Text(
-                            _cod ? 'cod'.tr : 'digitally_paid'.tr,
-                            style: robotoRegular.copyWith(
-                                fontSize: Dimensions.FONT_SIZE_EXTRA_SMALL,
-                                color: Theme.of(context).cardColor),
-                          ),
-                        ),
-                      ]),
-                      Divider(height: Dimensions.PADDING_SIZE_LARGE),
-                      SizedBox(height: Dimensions.PADDING_SIZE_SMALL),
-                      // InfoCard(
-                      //   title:
-                      //   _parcel ? 'sender_details'.tr : 'store_details'.tr,
-                      //   address: _parcel
-                      //       ? orderModel.deliveryAddress!
-                      //       : DeliveryAddress(
-                      //     address: orderModel.storeAddress,
-                      //   ),
-                      //   image: _parcel
-                      //       ? ''
-                      //       : '${Get.find<SplashController>().configModel!.baseUrls?.storeImageUrl}/${orderModel.storeLogo}',
-                      //   name: _parcel
-                      //       ? orderModel.deliveryAddress?.contactPersonName
-                      //       : orderModel.storeName,
-                      //   phone: _parcel
-                      //       ? orderModel.deliveryAddress?.contactPersonNumber
-                      //       : orderModel.storePhone,
-                      //   latitude: _parcel
-                      //       ? orderModel.deliveryAddress?.latitude
-                      //       : orderModel.storeLat,
-                      //   longitude: _parcel
-                      //       ? orderModel.deliveryAddress?.longitude
-                      //       : orderModel.storeLng,
-                      //   showButton: orderModel.orderStatus != 'delivered',
-                      // ),
-
-                      SizedBox(
-                        height: MediaQuery.of(context).size.height * .31,
-                        child: ListView.builder(
-                          itemCount: orderController.orderDetailsModel!.length,
-                          itemBuilder: (context, index) {
-                            var orderDetails = orderController.orderDetailsModel![index];
-                            if (displayedStores.contains(orderDetails.storeName)) {
-                              return SizedBox.shrink();
-                            } else {
-                              displayedStores.add(orderDetails.storeName!);
-                              return InfoCardList(orderDetailsModel: orderDetails);
-                            }
-                          },
-                        ),
-                      ),
-                      SizedBox(height: Dimensions.PADDING_SIZE_LARGE),
-                      InfoCard(
-                        title: _parcel
-                            ? 'receiver_details'.tr
-                            : 'customer_contact_details'.tr,
-                        address: _parcel
-                            ? orderModel.receiverDetails
-                            : orderModel.deliveryAddress,
-                        image: _parcel
-                            ? ''
-                            : orderModel.customer != null
-                            ? '${Get.find<SplashController>().configModel!.baseUrls?.customerImageUrl}/${orderModel.customer?.image}'
-                            : '',
-                        name: _parcel
-                            ? orderModel.receiverDetails?.contactPersonName
-                            : orderModel.deliveryAddress?.contactPersonName,
-                        phone: _parcel
-                            ? orderModel.receiverDetails?.contactPersonNumber
-                            : orderModel.deliveryAddress?.contactPersonNumber,
-                        latitude: _parcel
-                            ? orderModel.receiverDetails?.latitude
-                            : orderModel.deliveryAddress?.latitude,
-                        longitude: _parcel
-                            ? orderModel.receiverDetails?.longitude
-                            : orderModel.deliveryAddress?.longitude,
-                        showButton: orderModel.orderStatus != 'delivered',
-                      ),
-                      SizedBox(height: Dimensions.PADDING_SIZE_LARGE),
-                      _parcel
-                          ? Container(
-                              padding:
-                                  EdgeInsets.all(Dimensions.PADDING_SIZE_SMALL),
-                              decoration: BoxDecoration(
-                                color: Theme.of(context).cardColor,
-                                borderRadius: BorderRadius.circular(
-                                    Dimensions.RADIUS_SMALL),
-                                boxShadow: [
-                                  BoxShadow(
-                                      color: Colors
-                                          .grey[Get.isDarkMode ? 700 : 200]!,
-                                      spreadRadius: 1,
-                                      blurRadius: 5)
-                                ],
-                              ),
-                              child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text('parcel_category'.tr,
-                                        style: robotoRegular),
-                                    SizedBox(
-                                        height: Dimensions
-                                            .PADDING_SIZE_EXTRA_SMALL),
-                                    Row(children: [
-                                      ClipOval(
-                                          child: CustomImage(
-                                        image:
-                                            '${Get.find<SplashController>().configModel!.baseUrls?.parcelCategoryImageUrl}/${orderModel.parcelCategory?.image}',
-                                        height: 35,
-                                        width: 35,
-                                        fit: BoxFit.cover,
-                                      )),
-                                      SizedBox(
-                                          width: Dimensions.PADDING_SIZE_SMALL),
-                                      Expanded(
-                                          child: Column(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                              children: [
-                                            Text(
-                                              orderModel.parcelCategory!.name!,
-                                              maxLines: 1,
-                                              overflow: TextOverflow.ellipsis,
-                                              style: robotoRegular.copyWith(
-                                                  fontSize: Dimensions
-                                                      .FONT_SIZE_SMALL),
-                                            ),
-                                            Text(
-                                              orderModel
-                                                  .parcelCategory!.description!,
-                                              maxLines: 1,
-                                              overflow: TextOverflow.ellipsis,
-                                              style: robotoRegular.copyWith(
-                                                  fontSize: Dimensions
-                                                      .FONT_SIZE_SMALL,
-                                                  color: Theme.of(context)
-                                                      .disabledColor),
-                                            ),
-                                          ])),
-                                    ]),
-                                  ]),
-                            )
-                          : ListView.builder(
-                              shrinkWrap: true,
-                              physics: NeverScrollableScrollPhysics(),
-                              itemCount:
-                                  orderController.orderDetailsModel!.length,
-                              itemBuilder: (context, index) {
-                                return OrderItemWidget(
-                                    order: orderModel,
-                                    orderDetails: orderController
-                                        .orderDetailsModel![index]);
-                              },
-                            ),
-
-                      (orderModel.orderNote != null &&
-                              orderModel.orderNote!.isNotEmpty)
-                          ? Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                  Text('additional_note'.tr,
-                                      style: robotoRegular),
-                                  SizedBox(
-                                      height: Dimensions.PADDING_SIZE_SMALL),
-                                  Container(
-                                    width: 1170,
-                                    padding: EdgeInsets.all(
-                                        Dimensions.PADDING_SIZE_SMALL),
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(5),
-                                      border: Border.all(
-                                          width: 1,
-                                          color:
-                                              Theme.of(context).disabledColor),
-                                    ),
-                                    child: Text(
-                                      orderModel.orderNote!,
-                                      style: robotoRegular.copyWith(
-                                          fontSize: Dimensions.FONT_SIZE_SMALL,
-                                          color:
-                                              Theme.of(context).disabledColor),
-                                    ),
-                                  ),
-                                  SizedBox(
-                                      height: Dimensions.PADDING_SIZE_LARGE),
-                                  (Get.find<SplashController>()
-                                              .getModule(orderModel.moduleType!)
-                                              .orderAttachment! &&
-                                          orderModel.orderAttachment != null &&
-                                          orderModel
-                                              .orderAttachment!.isNotEmpty)
-                                      ? Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                              Text('prescription'.tr,
-                                                  style: robotoRegular),
-                                              SizedBox(
-                                                  height: Dimensions
-                                                      .PADDING_SIZE_SMALL),
-                                              Center(
-                                                  child: ClipRRect(
-                                                borderRadius:
-                                                    BorderRadius.circular(
-                                                        Dimensions
-                                                            .RADIUS_SMALL),
-                                                child: CustomImage(
-                                                  image:
-                                                      '${Get.find<SplashController>().configModel!.baseUrls?.orderAttachmentUrl}/${orderModel.orderAttachment}',
-                                                  width: 200,
-                                                ),
-                                              )),
-                                              SizedBox(
-                                                  height: Dimensions
-                                                      .PADDING_SIZE_LARGE),
-                                            ])
-                                      : SizedBox(),
-                                ])
-                          : SizedBox(),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text('totalItems'.tr,style: robotoMedium,),
-                          Text(PriceConverter.convertPrice(orderController.calculateTotalPrice()),style: robotoMedium,),
-                        ],
-                      ),
-                      SizedBox(height: Dimensions.PADDING_SIZE_EXTRA_LARGE),
-
+                      ])),
                     ]),
-                  )),
-                  // _showBottomView
-                  //     ? CustomButton(
-                  //   buttonText: 'swipe_to_confirm_delivery'.tr,
-                  //   onPressed: () {
-                  //     if (_pickedUp) {
-                  //       if (Get.find<SplashController>().configModel!.orderDeliveryVerification! || _cod) {
-                  //         Get.bottomSheet(
-                  //           VerifyDeliverySheet(
-                  //             orderIndex: orderIndex!,
-                  //             verify: Get.find<SplashController>().configModel!.orderDeliveryVerification!,
-                  //             orderAmount: orderModel.orderAmount!,
-                  //             cod: _cod,
-                  //           ),
-                  //           isScrollControlled: true,
-                  //         ).then((value) {
-                  //           // تحديث حالة الطلب بعد التحقق
-                  //           if (value != null && value) {
-                  //             Get.find<OrderController>().updateOrderStatus(orderIndex!, AppConstants.DELIVERED);
-                  //           }
-                  //         });
-                  //       } else {
-                  //         Get.find<OrderController>().updateOrderStatus(orderIndex!, AppConstants.DELIVERED);
-                  //         showCustomSnackBar('picked_up_condition'.tr);
-                  //       }
-                  //     } else if (_handover) {
-                  //       if (Get.find<AuthController>().profileModel!.active == 1) {
-                  //         if (Get.find<SplashController>().configModel!.orderDeliveryVerification! || _cod) {
-                  //           Get.bottomSheet(
-                  //             VerifyDeliverySheet(
-                  //               orderIndex: orderIndex!,
-                  //               verify: Get.find<SplashController>().configModel!.orderDeliveryVerification!,
-                  //               orderAmount: orderModel.orderAmount!,
-                  //               cod: _cod,
-                  //             ),
-                  //             isScrollControlled: true,
-                  //           ).then((value) {
-                  //             // تحديث حالة الطلب بعد التحقق
-                  //             if (value != null && value) {
-                  //               Get.find<OrderController>().updateOrderStatus(orderIndex!, AppConstants.PICKED_UP);
-                  //             }
-                  //           });
-                  //         } else {
-                  //           Get.find<OrderController>().updateOrderStatus(orderIndex!, AppConstants.PICKED_UP);
-                  //         }
-                  //       } else {
-                  //         showCustomSnackBar('make_yourself_online_first'.tr);
-                  //       }
-                  //     }
-                  //   },
-                  // )
-                  //     : SizedBox(),
-                  _showBottomView
-                      ? Container(
-                          padding:
-                              EdgeInsets.all(Dimensions.PADDING_SIZE_DEFAULT),
-                          width: MediaQuery.of(context).size.width,
-                          decoration: BoxDecoration(
-                            borderRadius:
-                                BorderRadius.circular(Dimensions.RADIUS_SMALL),
-                            border: Border.all(width: 1),
-                          ),
-                          alignment: Alignment.center,
-                          child: Column(
-                            children: [
-                              Text(
-                                _processing
-                                    ? 'order_is_preparing'.tr
-                                    : 'order_waiting_for_process'.tr,
-                                style: robotoMedium,
-                              ),
-                                CustomButton(
-                                  buttonText: 'confirm'.tr,
-                                  onPressed: () {
-                                    Get.dialog(
-                                      ConfirmationDialog(
-                                        icon: Images.warning,
-                                        title: 'are_you_sure_to_confirm'.tr,
-                                        description:
-                                            'you_want_to_confirm_this_order'.tr,
-                                        onYesPressed: () {
-                                          orderController.updateOrderStatus(
-                                            orderIndex!,
-                                            AppConstants.DELIVERED,
-                                            back: true,
-                                          );
+                  ]),
+                ) : ListView.builder(
+                  shrinkWrap: true,
+                  physics: NeverScrollableScrollPhysics(),
+                  itemCount: orderController.orderDetailsModel.length,
+                  itemBuilder: (context, index) {
+                    return OrderItemWidget(order: orderModel, orderDetails: orderController.orderDetailsModel[index]);
+                  },
+                ),
 
-                                          print('${orderModel.orderStatus}');
-                                          if(_confirmed){
-                                            showCustomSnackBar('تم تاكيد الطلب ');
+                (orderModel.orderNote  != null && orderModel.orderNote!.isNotEmpty) ? Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                  Text('additional_note'.tr, style: robotoRegular),
+                  SizedBox(height: Dimensions.PADDING_SIZE_SMALL),
+                  Container(
+                    width: 1170,
+                    padding: EdgeInsets.all(Dimensions.PADDING_SIZE_SMALL),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(5),
+                      border: Border.all(width: 1, color: Theme.of(context).disabledColor),
+                    ),
+                    child: Text(
+                      orderModel.orderNote!,
+                      style: robotoRegular.copyWith(fontSize: Dimensions.FONT_SIZE_SMALL, color: Theme.of(context).disabledColor),
+                    ),
+                  ),
+                  SizedBox(height: Dimensions.PADDING_SIZE_LARGE),
 
-                                          }
-                                        },
-                                          onNoPressed:(){
+                  (Get.find<SplashController>().getModule(orderModel.moduleType!).orderAttachment!
+                  && orderModel.orderAttachment != null && orderModel.orderAttachment!.isNotEmpty)
+                  ? Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                    Text('prescription'.tr, style: robotoRegular),
+                    SizedBox(height: Dimensions.PADDING_SIZE_SMALL),
+                    Center(child: ClipRRect(
+                      borderRadius: BorderRadius.circular(Dimensions.RADIUS_SMALL),
+                      child: CustomImage(
+                        image: '${Get.find<SplashController>().configModel!.baseUrls!.orderAttachmentUrl}/${orderModel.orderAttachment}',
+                        width: 200,
+                      ),
+                    )),
+                    SizedBox(height: Dimensions.PADDING_SIZE_LARGE),
+                  ]) : SizedBox(),
 
-                                            Get.dialog(Dialog(
-                                              shape: RoundedRectangleBorder(
-                                                  borderRadius: BorderRadius.circular(Dimensions.RADIUS_SMALL)),
-                                              child: Padding(
-                                                padding: EdgeInsets.all(Dimensions.PADDING_SIZE_LARGE),
-                                                child: Column(mainAxisSize: MainAxisSize.min, children: [
-                                                  Padding(
-                                                    padding: EdgeInsets.all(Dimensions.PADDING_SIZE_LARGE),
-                                                    child: Image.asset(Images.warning,width: 50,height: 50, ),
-                                                  ),
-                                                  CustomTextField(
-                                                    controller:orderController.controller,
-                                                    hintText: 'reason_for_cancellation'.tr,
-                                                    maxLines: 3,
-                                                  ),
-                                                  SizedBox(height: 20,),
-                                                  GetBuilder<OrderController>(builder: (orderController) {
-                                                    return !orderController.isLoading
-                                                        ? Row(children: [
-                                                      Expanded(
-                                                          child: TextButton(
-                                                            onPressed: () {
-                                                              orderController.updateOrderStatus(
-                                                                orderIndex!,
-                                                                reason: orderController.controller.text,
-                                                                AppConstants.canceled,
-                                                                back: true,
-                                                              );
-                                                            },
-                                                            style: TextButton.styleFrom(
-                                                              backgroundColor: Theme.of(context)
-                                                                  .disabledColor
-                                                                  .withOpacity(0.3),
-                                                              minimumSize: Size(1170, 40),
-                                                              padding: EdgeInsets.zero,
-                                                              shape: RoundedRectangleBorder(
-                                                                  borderRadius: BorderRadius.circular(
-                                                                      Dimensions.RADIUS_SMALL)),
-                                                            ),
-                                                            child: Text(
-                                                              'no'.tr ,
-                                                              textAlign: TextAlign.center,
-                                                              style: robotoBold.copyWith(
-                                                                  color: Theme.of(context)
-                                                                      .textTheme
-                                                                      .bodyLarge
-                                                                      ?.color),
-                                                            ),
-                                                          )),
+                ]) : SizedBox(),
 
-                                                    ])
-                                                        : Center(child: CircularProgressIndicator());
-                                                  }),
-                                                ]),
-                                              ),
-                                            ));
+              ]),
+            )),
 
+            _showBottomView ? ((_accepted && !_parcel && (!_cod || _restConfModel || _selfDelivery))
+             || _processing || _confirmed) ? Container(
+              padding: EdgeInsets.all(Dimensions.PADDING_SIZE_DEFAULT),
+              width: MediaQuery.of(context).size.width,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(Dimensions.RADIUS_SMALL),
+                border: Border.all(width: 1),
+              ),
+              alignment: Alignment.center,
+              child: Text(
+                _processing ? 'order_is_preparing'.tr : 'order_waiting_for_process'.tr,
+                style: robotoMedium,
+              ),
+            ) : _showSlider ? ((_cod && _accepted && !_restConfModel && _cancelPermission && !_selfDelivery)
+            || (_parcel && _accepted && _cancelPermission)) ? Row(children: [
 
-                                          }
-                                      ),
-                                      barrierDismissible: false,
-                                    );
-                                  },
-                                ),
-                            ],
-                          ),
-                        )
-                      : SizedBox(),
-//SliderButton(
-//                           action: () {
-//                             if (_accepted && !_confirmed) {
-//                               Get.dialog(
-//                                 ConfirmationDialog(
-//                                   icon: Images.warning,
-//                                   title: 'are_you_sure_to_confirm'.tr,
-//                                   description:
-//                                       'you_want_to_confirm_this_order'.tr,
-//                                   onYesPressed: () {
-//                                     orderController.updateOrderStatus(
-//                                       orderIndex!,
-//                                       AppConstants.CONFIRMED,
-//                                       back: true,
-//                                     );
-//                                   },
-//                                 ),
-//                                 barrierDismissible: false,
-//                               );
-//                             }
-//                           },
-//                           label: Text(
-//                             'swipe_to_confirm_order'.tr,
-//                             style: robotoMedium.copyWith(
-//                               fontSize: Dimensions.FONT_SIZE_LARGE,
-//                               color: Theme.of(context).primaryColor,
-//                             ),
-//                           ),
-//                           dismissThresholds: 0.5,
-//                           dismissible: false,
-//                           shimmer: true,
-//                           width: 1170,
-//                           height: 60,
-//                           buttonSize: 50,
-//                           radius: 10,
-//                           icon: Center(
-//                             child: Icon(
-//                               Get.find<LocalizationController>().isLtr
-//                                   ? Icons.double_arrow_sharp
-//                                   : Icons.keyboard_arrow_left,
-//                               color: Colors.white,
-//                               size: 20.0,
-//                             ),
-//                           ),
-//                           isLtr: Get.find<LocalizationController>().isLtr,
-//                           boxShadow: BoxShadow(blurRadius: 0),
-//                           buttonColor: Theme.of(context).primaryColor,
-//                           backgroundColor: Color(0xffF4F7FC),
-//                           baseColor: Theme.of(context).primaryColor,
-//                         )
+              Expanded(child: TextButton(
+                onPressed: () => Get.dialog(ConfirmationDialog(
+                  icon: Images.warning, title: 'are_you_sure_to_cancel'.tr,
+                  description: _parcel ? 'you_want_to_cancel_this_delivery'.tr : 'you_want_to_cancel_this_order'.tr,
+                  onYesPressed: () {
+                    orderController.updateOrderStatus(orderIndex!, AppConstants.CANCELED, back: true);
+                  },
+                ), barrierDismissible: false),
+                style: TextButton.styleFrom(
+                  minimumSize: Size(1170, 40), padding: EdgeInsets.zero,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(Dimensions.RADIUS_SMALL),
+                    side: BorderSide(width: 1, color: Theme.of(context).textTheme.bodyLarge!.color!),
+                  ),
+                ),
+                child: Text('cancel'.tr, textAlign: TextAlign.center, style: robotoRegular.copyWith(
+                  color: Theme.of(context).textTheme.bodyLarge!.color,
+                  fontSize: Dimensions.FONT_SIZE_LARGE,
+                )),
+              )),
+              SizedBox(width: Dimensions.PADDING_SIZE_SMALL),
+              Expanded(child: CustomButton(
+                buttonText: 'confirm'.tr, height: 40,
+                onPressed: () {
+                  Get.dialog(ConfirmationDialog(
+                    icon: Images.warning, title: 'are_you_sure_to_confirm'.tr,
+                    description: _parcel ? 'you_want_to_confirm_this_delivery'.tr : 'you_want_to_confirm_this_order'.tr,
+                    onYesPressed: () {
+                      orderController.updateOrderStatus(
+                        orderIndex!, _parcel ? AppConstants.HANDOVER : AppConstants.CONFIRMED, back: true,
+                      );
+                    },
+                  ), barrierDismissible: false);
+                },
+              )),
 
+            ]) : SliderButton(
+              action: () {
 
-                  // _showBottomView
-                  //     ? ((_accepted &&
-                  //     !_parcel &&
-                  //     (!_cod || _restConfModel || _selfDelivery)) ||
-                  //     _processing ||
-                  //     _confirmed)
-                  //     ? Container(
-                  //   padding: EdgeInsets.all(
-                  //       Dimensions.PADDING_SIZE_DEFAULT),
-                  //   width: MediaQuery.of(context).size.width,
-                  //   decoration: BoxDecoration(
-                  //     borderRadius: BorderRadius.circular(
-                  //         Dimensions.RADIUS_SMALL),
-                  //     border: Border.all(width: 1),
-                  //   ),
-                  //   alignment: Alignment.center,
-                  //   child: Text(
-                  //     _processing
-                  //         ? 'order_is_preparing'.tr
-                  //         : 'order_waiting_for_process'.tr,
-                  //     style: robotoMedium,
-                  //   ),
-                  // )
-                  //     : _showSlider
-                  //     ? ((_cod &&
-                  //     _accepted &&
-                  //     !_restConfModel &&
-                  //     _cancelPermission! &&
-                  //     !_selfDelivery) ||
-                  //     (_parcel &&
-                  //         _accepted &&
-                  //         _cancelPermission!))
-                  //     ? Row(children: [
-                  //   Expanded(
-                  //       child: TextButton(
-                  //         onPressed: () => Get.dialog(
-                  //             ConfirmationDialog(
-                  //               icon: Images.warning,
-                  //               title:
-                  //               'are_you_sure_to_cancel'.tr,
-                  //               description: _parcel
-                  //                   ? 'you_want_to_cancel_this_delivery'
-                  //                   .tr
-                  //                   : 'you_want_to_cancel_this_order'
-                  //                   .tr,
-                  //               onYesPressed: () {
-                  //                 orderController
-                  //                     .updateOrderStatus(
-                  //                     orderIndex!,
-                  //                     AppConstants.CANCELED,
-                  //                     back: true);
-                  //               },
-                  //             ),
-                  //             barrierDismissible: false),
-                  //         style: TextButton.styleFrom(
-                  //           minimumSize: Size(1170, 40),
-                  //           padding: EdgeInsets.zero,
-                  //           shape: RoundedRectangleBorder(
-                  //             borderRadius: BorderRadius.circular(
-                  //                 Dimensions.RADIUS_SMALL),
-                  //             side: BorderSide(
-                  //                 width: 1,
-                  //                 color: Theme.of(context)
-                  //                     .textTheme
-                  //                     .bodyText1!
-                  //                     .color!),
-                  //           ),
-                  //         ),
-                  //         child: Text('cancel'.tr,
-                  //             textAlign: TextAlign.center,
-                  //             style: robotoRegular.copyWith(
-                  //               color: Theme.of(context)
-                  //                   .textTheme
-                  //                   .bodyText1
-                  //                   ?.color,
-                  //               fontSize:
-                  //               Dimensions.FONT_SIZE_LARGE,
-                  //             )),
-                  //       )),
-                  //   SizedBox(
-                  //       width: Dimensions.PADDING_SIZE_SMALL),
-                  //   Expanded(
-                  //       child: CustomButton(
-                  //         buttonText: 'confirm'.tr,
-                  //         height: 40,
-                  //         onPressed: () {
-                  //           Get.dialog(
-                  //               ConfirmationDialog(
-                  //                 icon: Images.warning,
-                  //                 title: 'are_you_sure_to_confirm'
-                  //                     .tr,
-                  //                 description: _parcel
-                  //                     ? 'you_want_to_confirm_this_delivery'
-                  //                     .tr
-                  //                     : 'you_want_to_confirm_this_order'
-                  //                     .tr,
-                  //                 onYesPressed: () {
-                  //                   orderController
-                  //                       .updateOrderStatus(
-                  //                     orderIndex!,
-                  //                     _parcel
-                  //                         ? AppConstants.HANDOVER
-                  //                         : AppConstants
-                  //                         .CONFIRMED,
-                  //                     back: true,
-                  //                   );
-                  //                 },
-                  //               ),
-                  //               barrierDismissible: false);
-                  //         },
-                  //       )),
-                  // ])
-                  //     : SliderButton(
-                  //   action: () {
-                  //     if ((_cod &&
-                  //         _accepted &&
-                  //         !_restConfModel &&
-                  //         !_selfDelivery) ||
-                  //         (_parcel && _accepted)) {
-                  //       Get.dialog(
-                  //           ConfirmationDialog(
-                  //             icon: Images.warning,
-                  //             title: 'are_you_sure_to_confirm'
-                  //                 .tr,
-                  //             description: _parcel
-                  //                 ? 'you_want_to_confirm_this_delivery'
-                  //                 .tr
-                  //                 : 'you_want_to_confirm_this_order'
-                  //                 .tr,
-                  //             onYesPressed: () {
-                  //               orderController
-                  //                   .updateOrderStatus(
-                  //                 orderIndex!,
-                  //                 _parcel
-                  //                     ? AppConstants.HANDOVER
-                  //                     : AppConstants
-                  //                     .CONFIRMED,
-                  //                 back: true,
-                  //               );
-                  //             },
-                  //           ),
-                  //           barrierDismissible: false);
-                  //     } else if (_pickedUp) {
-                  //       if (Get.find<SplashController>()
-                  //           .configModel!
-                  //           .orderDeliveryVerification! ||
-                  //           _cod) {
-                  //         Get.bottomSheet(
-                  //             VerifyDeliverySheet(
-                  //               orderIndex: orderIndex!,
-                  //               verify: Get.find<
-                  //                   SplashController>()
-                  //                   .configModel!
-                  //                   .orderDeliveryVerification!,
-                  //               orderAmount:
-                  //               orderModel.orderAmount!,
-                  //               cod: _cod,
-                  //             ),
-                  //             isScrollControlled: true);
-                  //       } else {
-                  //         Get.find<OrderController>()
-                  //             .updateOrderStatus(orderIndex!,
-                  //             AppConstants.DELIVERED);
-                  //       }
-                  //     } else if (_handover) {
-                  //       if (Get.find<AuthController>()
-                  //           .profileModel!
-                  //           .active ==
-                  //           1) {
-                  //         Get.find<OrderController>()
-                  //             .updateOrderStatus(orderIndex!,
-                  //             AppConstants.PICKED_UP);
-                  //       } else {
-                  //         showCustomSnackBar(
-                  //             'make_yourself_online_first'
-                  //                 .tr);
-                  //       }
-                  //     }
-                  //   },
-                  //   label: Text(
-                  //     (_parcel && _accepted)
-                  //         ? 'swipe_to_confirm_delivery'.tr
-                  //         : (_cod &&
-                  //         _accepted &&
-                  //         !_restConfModel &&
-                  //         !_selfDelivery)
-                  //         ? 'swipe_to_confirm_order'.tr
-                  //         : _pickedUp
-                  //         ? _parcel
-                  //         ? 'swipe_to_deliver_parcel'
-                  //         .tr
-                  //         : 'swipe_to_deliver_order'
-                  //         .tr
-                  //         : _handover
-                  //         ? _parcel
-                  //         ? 'swipe_to_pick_up_parcel'
-                  //         .tr
-                  //         : 'swipe_to_pick_up_order'
-                  //         .tr
-                  //         : '',
-                  //     style: robotoMedium.copyWith(
-                  //         fontSize:
-                  //         Dimensions.FONT_SIZE_LARGE,
-                  //         color:
-                  //         Theme.of(context).primaryColor),
-                  //   ),
-                  //   dismissThresholds: 0.5,
-                  //   dismissible: false,
-                  //   shimmer: true,
-                  //   width: 1170,
-                  //   height: 60,
-                  //   buttonSize: 50,
-                  //   radius: 10,
-                  //   icon: Center(
-                  //       child: Icon(
-                  //         Get.find<LocalizationController>().isLtr
-                  //             ? Icons.double_arrow_sharp
-                  //             : Icons.keyboard_arrow_left,
-                  //         color: Colors.white,
-                  //         size: 20.0,
-                  //       )),
-                  //   isLtr: Get.find<LocalizationController>()
-                  //       .isLtr,
-                  //   boxShadow: BoxShadow(blurRadius: 0),
-                  //   buttonColor:
-                  //   Theme.of(context).primaryColor,
-                  //   backgroundColor: Color(0xffF4F7FC),
-                  //   baseColor: Theme.of(context).primaryColor,
-                  // )
-                  //     : SizedBox()
-                  //     : SizedBox(),
-                ])
-              : Center(child: CircularProgressIndicator());
+                if((_cod && _accepted && !_restConfModel && !_selfDelivery) || (_parcel && _accepted)) {
+                  Get.dialog(ConfirmationDialog(
+                    icon: Images.warning, title: 'are_you_sure_to_confirm'.tr,
+                    description: _parcel ? 'you_want_to_confirm_this_delivery'.tr : 'you_want_to_confirm_this_order'.tr,
+                    onYesPressed: () {
+                      orderController.updateOrderStatus(
+                        orderIndex!, _parcel ? AppConstants.HANDOVER : AppConstants.CONFIRMED, back: true,
+                      );
+                    },
+                  ), barrierDismissible: false);
+                }
+
+                else if(_pickedUp) {
+                  if(Get.find<SplashController>().configModel!.orderDeliveryVerification! || _cod) {
+                    Get.bottomSheet(VerifyDeliverySheet(
+                      orderIndex: orderIndex!, verify: Get.find<SplashController>().configModel!.orderDeliveryVerification!,
+                      orderAmount: orderModel.orderAmount!, cod: _cod,
+                    ), isScrollControlled: true);
+                  }else {
+                    Get.find<OrderController>().updateOrderStatus(orderIndex!, AppConstants.DELIVERED);
+                  }
+                }
+
+                else if(_handover) {
+                  if(Get.find<AuthController>().profileModel!.active == 1) {
+                    Get.find<OrderController>().updateOrderStatus(orderIndex!, AppConstants.PICKED_UP);
+                  }else {
+                    showCustomSnackBar('make_yourself_online_first'.tr);
+                  }
+                }
+
+              },
+              label: Text(
+                (_parcel && _accepted) ? 'swipe_to_confirm_delivery'.tr
+                    : (_cod && _accepted && !_restConfModel && !_selfDelivery) ? 'swipe_to_confirm_order'.tr
+                    : _pickedUp ? _parcel ? 'swipe_to_deliver_parcel'.tr
+                    : 'swipe_to_deliver_order'.tr : _handover ? _parcel ? 'swipe_to_pick_up_parcel'.tr
+                    : 'swipe_to_pick_up_order'.tr : '',
+                style: robotoMedium.copyWith(fontSize: Dimensions.FONT_SIZE_LARGE, color: Theme.of(context).primaryColor),
+              ),
+              dismissThresholds: 0.5, dismissible: false, shimmer: true,
+              width: 1170, height: 60, buttonSize: 50, radius: 10,
+              icon: Center(child: Icon(
+                Get.find<LocalizationController>().isLtr ? Icons.double_arrow_sharp : Icons.keyboard_arrow_left,
+                color: Colors.white, size: 20.0,
+              )),
+              isLtr: Get.find<LocalizationController>().isLtr,
+              boxShadow: BoxShadow(blurRadius: 0),
+              buttonColor: Theme.of(context).primaryColor,
+              backgroundColor: Color(0xffF4F7FC),
+              baseColor: Theme.of(context).primaryColor,
+            ) : SizedBox() : SizedBox(),
+
+          ]) : Center(child: CircularProgressIndicator());
         }),
       ),
     );

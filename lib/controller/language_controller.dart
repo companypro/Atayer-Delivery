@@ -5,8 +5,8 @@ import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class LanguageController extends GetxController implements GetxService {
-  final SharedPreferences? sharedPreferences;
-  LanguageController({this.sharedPreferences});
+  final SharedPreferences sharedPreferences;
+  LanguageController({required this.sharedPreferences});
 
   int _selectIndex = 0;
   int get selectIndex => _selectIndex;

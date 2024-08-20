@@ -35,7 +35,7 @@ class NotificationDialog extends StatelessWidget {
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(Dimensions.RADIUS_SMALL),
                 child: CustomImage(
-                  image: '${Get.find<SplashController>().configModel!.baseUrls?.notificationImageUrl}/${notificationModel.image}',
+                  image: '${Get.find<SplashController>().configModel!.baseUrls!.notificationImageUrl}/${notificationModel.image}',
                   height: 150, width: MediaQuery.of(context).size.width, fit: BoxFit.cover,
                 ),
               ),

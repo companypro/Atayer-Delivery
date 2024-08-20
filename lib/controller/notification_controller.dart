@@ -6,11 +6,11 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class NotificationController extends GetxController implements GetxService {
-   final NotificationRepo notificationRepo;
-   NotificationController({required this.notificationRepo});
+  final NotificationRepo notificationRepo;
+  NotificationController({required this.notificationRepo});
 
-  List<NotificationModel>? _notificationList;
-  List<NotificationModel>? get notificationList => _notificationList;
+  List<NotificationModel> _notificationList = [];
+  List<NotificationModel> get notificationList => _notificationList;
 
   Future<void> getNotificationList() async {
     Response response = await notificationRepo.getNotificationList();
@@ -21,12 +21,12 @@ class NotificationController extends GetxController implements GetxService {
         _notification.title = notification['data']['title'];
         _notification.description = notification['data']['description'];
         _notification.image = notification['data']['image'];
-        _notificationList!.add(_notification);
+        _notificationList.add(_notification);
       });
-      _notificationList!.sort((a, b) {
+      _notificationList.sort((a, b) {
         return DateConverter.isoStringToLocalDate(a.updatedAt!).compareTo(DateConverter.isoStringToLocalDate(b.updatedAt!));
       });
-      dynamic iterable = _notificationList!.reversed;
+      Iterable<NotificationModel> iterable = _notificationList.reversed;
       _notificationList = iterable.toList();
     } else {
       ApiChecker.checkApi(response);

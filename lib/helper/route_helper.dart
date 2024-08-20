@@ -63,7 +63,7 @@ class RouteHelper {
     GetPage(name: orderDetails, page: () {
       OrderDetailsScreen _orderDetails = Get.arguments;
       return _orderDetails != null ? _orderDetails : OrderDetailsScreen(
-        orderModel: OrderModel(id: int.parse(Get.parameters['id']!)), orderIndex: null, isRunningOrder: null,
+        orderModel: OrderModel(id: int.parse(Get.parameters['id']!)), orderIndex: 0, isRunningOrder: null,
       );
     }),
     GetPage(name: updateProfile, page: () => UpdateProfileScreen()),

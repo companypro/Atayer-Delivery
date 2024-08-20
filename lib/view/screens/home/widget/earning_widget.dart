@@ -6,8 +6,8 @@ import 'package:shimmer_animation/shimmer_animation.dart';
 
 class EarningWidget extends StatelessWidget {
   final String title;
-  final double? amount;
-  EarningWidget({required this.title,   this.amount});
+  final double amount;
+  EarningWidget({required this.title, required this.amount});
 
   @override
   Widget build(BuildContext context) {
@@ -18,7 +18,7 @@ class EarningWidget extends StatelessWidget {
       ),
       SizedBox(height: Dimensions.PADDING_SIZE_SMALL),
       amount != null ? Text(
-        PriceConverter.convertPrice(amount!),
+        PriceConverter.convertPrice(amount),
         style: robotoMedium.copyWith(fontSize: Dimensions.FONT_SIZE_EXTRA_LARGE, color: Theme.of(context).cardColor),
         maxLines: 1, overflow: TextOverflow.ellipsis,
       ) : Shimmer(

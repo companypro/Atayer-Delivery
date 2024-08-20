@@ -45,20 +45,20 @@ class OrderRequestWidget extends StatelessWidget {
                 color: Theme.of(context).primaryColor.withOpacity(0.2),
               ) : null,
               child: ClipRRect(borderRadius: BorderRadius.circular(Dimensions.RADIUS_SMALL), child: CustomImage(
-                image: _parcel ? '${Get.find<SplashController>().configModel!.baseUrls?.parcelCategoryImageUrl}/${orderModel.parcelCategory != null
-                    ? orderModel.parcelCategory?.image : ''}' : '${Get.find<SplashController>().configModel!.baseUrls?.storeImageUrl}/${orderModel.storeLogo ?? ''}',
+                image: _parcel ? '${Get.find<SplashController>().configModel!.baseUrls!.parcelCategoryImageUrl}/${orderModel.parcelCategory != null
+                    ? orderModel.parcelCategory!.image : ''}' : '${Get.find<SplashController>().configModel!.baseUrls!.storeImageUrl}/${orderModel.storeLogo ?? ''}',
                 height: _parcel ? 30 : 45, width: _parcel ? 30 : 45, fit: BoxFit.cover,
               )),
             ),
             SizedBox(width: Dimensions.PADDING_SIZE_SMALL),
             Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
               Text(
-                _parcel ? orderModel.parcelCategory != null ? orderModel.parcelCategory?.name ?? ''
+                _parcel ? orderModel.parcelCategory != null ? orderModel.parcelCategory!.name ?? ''
                     : '' : orderModel.storeName ?? 'no_store_data_found'.tr, maxLines: 2, overflow: TextOverflow.ellipsis,
                 style: robotoRegular.copyWith(fontSize: Dimensions.FONT_SIZE_SMALL),
               ),
               Text(
-                _parcel ? orderModel.parcelCategory != null ? orderModel.parcelCategory?.description ?? '' : '' : orderModel.storeAddress ?? '', maxLines: 1, overflow: TextOverflow.ellipsis,
+                _parcel ? orderModel.parcelCategory != null ? orderModel.parcelCategory!.description ?? '' : '' : orderModel.storeAddress ?? '', maxLines: 1, overflow: TextOverflow.ellipsis,
                 style: robotoRegular.copyWith(fontSize: Dimensions.FONT_SIZE_SMALL, color: Theme.of(context).disabledColor),
               ),
             ])),
@@ -109,7 +109,7 @@ class OrderRequestWidget extends StatelessWidget {
                   orderController.ignoreOrder(index);
                   Get.back();
                   showCustomSnackBar('order_ignored'.tr, isError: false);
-                },  onNoPressed: (){},
+                },
               ), barrierDismissible: false),
               style: TextButton.styleFrom(
                 minimumSize: Size(1170, 40), padding: EdgeInsets.zero,
@@ -119,7 +119,7 @@ class OrderRequestWidget extends StatelessWidget {
                 ),
               ),
               child: Text('ignore'.tr, textAlign: TextAlign.center, style: robotoRegular.copyWith(
-                color: Theme.of(context).textTheme.bodyLarge?.color,
+                color: Theme.of(context).textTheme.bodyLarge!.color,
                 fontSize: Dimensions.FONT_SIZE_LARGE,
               )),
             )),
@@ -139,14 +139,14 @@ class OrderRequestWidget extends StatelessWidget {
                       Get.toNamed(
                         RouteHelper.getOrderDetailsRoute(orderModel.id!),
                         arguments: OrderDetailsScreen(
-                          orderModel: orderModel, isRunningOrder: true, orderIndex: orderController.currentOrderList!.length-1,
+                          orderModel: orderModel, isRunningOrder: true, orderIndex: orderController.currentOrderList.length-1,
                         ),
                       );
                     }else {
                       Get.find<OrderController>().getLatestOrders();
                     }
                   });
-                },  onNoPressed: (){},
+                },
               ), barrierDismissible: false),
             )),
           ]),

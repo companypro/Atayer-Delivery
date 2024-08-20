@@ -18,20 +18,20 @@ class NotificationScreen extends StatelessWidget {
       appBar: CustomAppBar(title: 'notification'.tr),
       body: GetBuilder<NotificationController>(builder: (notificationController) {
         if(notificationController.notificationList != null) {
-          notificationController.saveSeenNotificationCount(notificationController.notificationList!.length);
+          notificationController.saveSeenNotificationCount(notificationController.notificationList.length);
         }
         List<DateTime> _dateTimeList = [];
-        return notificationController.notificationList != null ? notificationController.notificationList!.length > 0 ? RefreshIndicator(
+        return notificationController.notificationList != null ? notificationController.notificationList.length > 0 ? RefreshIndicator(
           onRefresh: () async {
             await notificationController.getNotificationList();
           },
           child: Scrollbar(child: SingleChildScrollView(child: Center(child: SizedBox(width: 1170, child: ListView.builder(
-            itemCount: notificationController.notificationList!.length,
+            itemCount: notificationController.notificationList.length,
             padding: EdgeInsets.zero,
             physics: NeverScrollableScrollPhysics(),
             shrinkWrap: true,
             itemBuilder: (context, index) {
-              DateTime _originalDateTime = DateConverter.dateTimeStringToDate(notificationController.notificationList![index].createdAt!);
+              DateTime _originalDateTime = DateConverter.dateTimeStringToDate(notificationController.notificationList[index].createdAt!);
               DateTime _convertedDate = DateTime(_originalDateTime.year, _originalDateTime.month, _originalDateTime.day);
               bool _addTitle = false;
               if(!_dateTimeList.contains(_convertedDate)) {
@@ -42,26 +42,26 @@ class NotificationScreen extends StatelessWidget {
 
                 _addTitle ? Padding(
                   padding: EdgeInsets.fromLTRB(10, 10, 10, 0),
-                  child: Text(DateConverter.dateTimeStringToDateOnly(notificationController.notificationList![index].createdAt!)),
+                  child: Text(DateConverter.dateTimeStringToDateOnly(notificationController.notificationList[index].createdAt!)),
                 ) : SizedBox(),
 
                 ListTile(
                   onTap: () {
                     showDialog(context: context, builder: (BuildContext context) {
-                      return NotificationDialog(notificationModel: notificationController.notificationList![index]);
+                      return NotificationDialog(notificationModel: notificationController.notificationList[index]);
                     });
                   },
                   leading: ClipOval(child: CustomImage(
-                    image: '${Get.find<SplashController>().configModel!.baseUrls?.notificationImageUrl}'
-                        '/${notificationController.notificationList![index].image}',
+                    image: '${Get.find<SplashController>().configModel!.baseUrls!.notificationImageUrl!}'
+                        '/${notificationController.notificationList[index].image}',
                     height: 40, width: 40, fit: BoxFit.cover,
                   )),
                   title: Text(
-                    notificationController.notificationList![index].title ?? '',
+                    notificationController.notificationList[index].title ?? '',
                     style: robotoMedium.copyWith(fontSize: Dimensions.FONT_SIZE_SMALL),
                   ),
                   subtitle: Text(
-                    notificationController.notificationList![index].description ?? '',
+                    notificationController.notificationList[index].description ?? '',
                     style: robotoRegular.copyWith(fontSize: Dimensions.FONT_SIZE_SMALL),
                   ),
                 ),

@@ -43,8 +43,8 @@ class HistoryOrderWidget extends StatelessWidget {
             child: ClipRRect(
               borderRadius: BorderRadius.circular(Dimensions.RADIUS_SMALL),
               child: CustomImage(
-                image: _parcel ? '${Get.find<SplashController>().configModel!.baseUrls?.parcelCategoryImageUrl}/${orderModel.parcelCategory?.image}'
-                    : '${Get.find<SplashController>().configModel!.baseUrls?.storeImageUrl}/${orderModel.storeLogo ?? ''}',
+                image: _parcel ? '${Get.find<SplashController>().configModel!.baseUrls!.parcelCategoryImageUrl}/${orderModel.parcelCategory!.image}'
+                    : '${Get.find<SplashController>().configModel!.baseUrls!.storeImageUrl}/${orderModel.storeLogo ?? ''}',
                 height: _parcel ? 45 : 70, width: _parcel ? 45 : 70, fit: BoxFit.cover,
               ),
             ),

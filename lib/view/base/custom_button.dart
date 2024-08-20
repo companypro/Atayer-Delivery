@@ -16,10 +16,10 @@ class CustomButton extends StatelessWidget {
   CustomButton(
       {  this.onPressed,
         this.buttonText,
-      this.transparent = false,
-          this.margin,
-          this.width,
-          this.height,
+        this.transparent = false,
+        this.margin,
+        this.width,
+        this.height,
         this.fontSize,
         this.icon,
         this.backgroundColor,
@@ -31,12 +31,12 @@ class CustomButton extends StatelessWidget {
       backgroundColor: onPressed == null
           ? Theme.of(context).disabledColor
           : transparent
-              ? Colors.transparent
-              : backgroundColor != null
-                  ? backgroundColor
-                  : Theme.of(context).primaryColor,
+          ? Colors.transparent
+          : backgroundColor != null
+          ? backgroundColor
+          : Theme.of(context).primaryColor,
       minimumSize:
-          // Size(width == null ? width : 1170, height != null ? height : 50),
+      // Size(width == null ? width : 1170, height != null ? height : 50),
       Size(1170, 50),
       padding: EdgeInsets.zero,
       shape: RoundedRectangleBorder(
@@ -49,12 +49,12 @@ class CustomButton extends StatelessWidget {
       child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
         icon != null
             ? Icon(
-                icon,
-                color: transparent
-                    ? Theme.of(context).primaryColor
-                    : Theme.of(context).cardColor,
-                size: 20,
-              )
+          icon,
+          color: transparent
+              ? Theme.of(context).primaryColor
+              : Theme.of(context).cardColor,
+          size: 20,
+        )
             : SizedBox(),
         SizedBox(
             width: icon != null ? Dimensions.PADDING_SIZE_EXTRA_SMALL : 0),
@@ -64,10 +64,10 @@ class CustomButton extends StatelessWidget {
               color: transparent
                   ? Theme.of(context).primaryColor
                   : fontColor != null
-                      ? fontColor
-                      : Theme.of(context).cardColor,
+                  ? fontColor
+                  : Theme.of(context).cardColor,
               fontSize:
-                  fontSize != null ? fontSize : Dimensions.FONT_SIZE_LARGE,
+              fontSize != null ? fontSize : Dimensions.FONT_SIZE_LARGE,
             )),
       ]),
     );

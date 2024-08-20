@@ -195,10 +195,10 @@ class DeliveryAddress {
   String? addressType;
   String?  contactPersonNumber;
   String? address;
-    String?  latitude;
-    String? longitude;
+  String?  latitude;
+  String? longitude;
   int? userId;
-    String? contactPersonName;
+  String? contactPersonName;
   String? createdAt;
   String? updatedAt;
   int? zoneId;
@@ -210,12 +210,12 @@ class DeliveryAddress {
   DeliveryAddress(
       {this.id,
         this.addressType,
-          this.contactPersonNumber,
+        this.contactPersonNumber,
         this.address,
-          this.latitude,
-          this.longitude,
+        this.latitude,
+        this.longitude,
         this.userId,
-          this.contactPersonName,
+        this.contactPersonName,
         this.createdAt,
         this.updatedAt,
         this.zoneId,

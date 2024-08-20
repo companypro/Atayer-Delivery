@@ -7,8 +7,6 @@ import 'package:sixam_mart_delivery/view/screens/request/widget/order_requset_wi
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-import '../order/widget/history_order_widget.dart';
-
 class OrderRequestScreen extends StatefulWidget {
   final Function onTap;
   OrderRequestScreen({required this.onTap});
@@ -42,27 +40,19 @@ class _OrderRequestScreenState extends State<OrderRequestScreen> {
     return Scaffold(
       appBar: CustomAppBar(title: 'order_request'.tr, isBackButtonExist: false),
       body: GetBuilder<OrderController>(builder: (orderController) {
-
-        return orderController.currentOrderList != null ? orderController.currentOrderList!.length > 0 ? RefreshIndicator(
+        return orderController.latestOrderList != null ? orderController.latestOrderList.length > 0 ? RefreshIndicator(
           onRefresh: () async {
-            await orderController.getCurrentOrders();
+            await Get.find<OrderController>().getLatestOrders();
           },
-          child: Scrollbar(child: SingleChildScrollView(
+          child: ListView.builder(
+            itemCount: orderController.latestOrderList.length,
+            padding: EdgeInsets.all(Dimensions.PADDING_SIZE_SMALL),
             physics: AlwaysScrollableScrollPhysics(),
-            child: Center(child: SizedBox(
-              width: 1170,
-              child: ListView.builder(
-                padding: EdgeInsets.all(Dimensions.PADDING_SIZE_SMALL),
-                itemCount: orderController.currentOrderList!.length,
-                physics: NeverScrollableScrollPhysics(),
-                shrinkWrap: true,
-                itemBuilder: (context, index) {
-                  return HistoryOrderWidget(orderModel: orderController.currentOrderList![index], isRunning: true, index: index);
-                },
-              ),
-            )),
-          )),
-        ) : Center(child: Text('no_order_found'.tr)) : Center(child: CircularProgressIndicator());
+            itemBuilder: (context, index) {
+              return OrderRequestWidget(orderModel: orderController.latestOrderList[index], index: index, onTap: widget.onTap);
+            },
+          ),
+        ) : Center(child: Text('no_order_request_available'.tr)) : Center(child: CircularProgressIndicator());
       }),
     );
   }

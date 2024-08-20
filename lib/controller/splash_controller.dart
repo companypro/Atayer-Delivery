@@ -9,48 +9,20 @@ class SplashController extends GetxController implements GetxService {
   SplashController({required this.splashRepo});
 
   ConfigModel? _configModel;
-  bool? _firstTimeConnectionCheck = true;
+  bool _firstTimeConnectionCheck = true;
   int? _storeCategoryID;
   String? _storeType;
-  Map<String, dynamic> _data = {};
+  Map<String, dynamic> _data = Map();
   String? _htmlText;
-
 
   ConfigModel? get configModel => _configModel;
   DateTime get currentTime => DateTime.now();
-  bool? get firstTimeConnectionCheck => _firstTimeConnectionCheck;
+  bool get firstTimeConnectionCheck => _firstTimeConnectionCheck;
   int? get storeCategoryID => _storeCategoryID;
   String? get storeType => _storeType;
   String? get htmlText => _htmlText;
 
-
-  @override
-  void onInit() {
-    super.onInit();
-    getConfigData();
-    initSharedData();
-  }
-
   Future<bool> getConfigData() async {
-    Response response = await splashRepo.getConfigData();
-    bool _isSuccess = false;
-
-    if (response.statusCode == 200) {
-      _data = response.body;
-      _configModel = ConfigModel.fromJson(response.body);
-      _isSuccess = true;
-
-    } else {
-      ApiChecker.checkApi(response);
-      _isSuccess = false;
-
-    }
-
-    update();
-    return _isSuccess;
-
-  }
-  Future<bool> getConfigDataa() async {
     Response response = await splashRepo.getConfigData();
     bool _isSuccess = false;
     if(response.statusCode == 200) {
@@ -64,6 +36,7 @@ class SplashController extends GetxController implements GetxService {
     update();
     return _isSuccess;
   }
+
   Module getModule(String moduleType) => Module.fromJson(_data['module_config'][moduleType]);
 
   Future<bool> initSharedData() {
@@ -79,12 +52,13 @@ class SplashController extends GetxController implements GetxService {
   }
 
   Future<void> getHtmlText(bool isPrivacyPolicy) async {
+    _htmlText = null;
     Response response = await splashRepo.getHtmlText(isPrivacyPolicy);
     if (response.statusCode == 200) {
       _htmlText = response.body;
-      if (_htmlText!.isNotEmpty) {
+      if(_htmlText != null && _htmlText!.isNotEmpty) {
         _htmlText = _htmlText!.replaceAll('href=', 'target="_blank" href=');
-      } else {
+      }else {
         _htmlText = '';
       }
     } else {
@@ -92,4 +66,5 @@ class SplashController extends GetxController implements GetxService {
     }
     update();
   }
+
 }

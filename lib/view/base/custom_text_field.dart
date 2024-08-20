@@ -21,20 +21,20 @@ class CustomTextField extends StatefulWidget {
 
   CustomTextField(
       {this.hintText = 'Write something...',
-      this.controller,
-      this.focusNode,
-      this.nextFocus,
-      this.isEnabled = true,
-      this.inputType = TextInputType.text,
-      this.inputAction = TextInputAction.next,
-      this.maxLines = 1,
-       this.onSubmit,
+        this.controller,
+        this.focusNode,
+        this.nextFocus,
+        this.isEnabled = true,
+        this.inputType = TextInputType.text,
+        this.inputAction = TextInputAction.next,
+        this.maxLines = 1,
+        this.onSubmit,
         this.onChanged,
-       this.prefixIcon,
-      this.capitalization = TextCapitalization.none,
-      this.isPassword = false,
-      this.divider = false}
-  );
+        this.prefixIcon,
+        this.capitalization = TextCapitalization.none,
+        this.isPassword = false,
+        this.divider = false}
+      );
 
   @override
   _CustomTextFieldState createState() => _CustomTextFieldState();
@@ -82,7 +82,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
           onSubmitted: (text) => widget.nextFocus != null ? FocusScope.of(context).requestFocus(widget.nextFocus)
               : widget.onSubmit != null ? widget.onSubmit!(text) : null,
           onTap: widget.onChanged,
-         ),
+        ),
 
         widget.divider ? Padding(padding: EdgeInsets.symmetric(horizontal: Dimensions.PADDING_SIZE_LARGE), child: Divider()) : SizedBox(),
       ],

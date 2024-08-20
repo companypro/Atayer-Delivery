@@ -6,9 +6,9 @@ class ErrorResponse {
   List<Errors> get errors => _errors;
 
   ErrorResponse({
-      List<Errors>? errors}){
-      _errors = errors!;
-}
+    List<Errors>? errors}){
+    _errors = errors!;
+  }
 
   ErrorResponse.fromJson(dynamic json) {
     if (json["errors"] != null) {
@@ -40,11 +40,11 @@ class Errors {
   String get message => _message;
 
   Errors({
-      String? code,
-      String? message}){
+    String? code,
+    String? message}){
     _code = code!;
     _message = message!;
-}
+  }
 
   Errors.fromJson(dynamic json) {
     _code = json["code"];

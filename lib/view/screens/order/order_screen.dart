@@ -18,7 +18,7 @@ class OrderScreen extends StatelessWidget {
           if (scrollController.position.pixels == scrollController.position.maxScrollExtent
               && orderController.completedOrderList != null
               && !Get.find<OrderController>().paginate) {
-            int pageSize = (Get.find<OrderController>().pageSize / 10).ceil();
+            int pageSize = (Get.find<OrderController>().pageSize! / 10).ceil();
             if (Get.find<OrderController>().offset < pageSize) {
               Get.find<OrderController>().setOffset(Get.find<OrderController>().offset+1);
               print('end of the page');
@@ -28,7 +28,7 @@ class OrderScreen extends StatelessWidget {
           }
         });
 
-        return orderController.completedOrderList != null ? orderController.completedOrderList!.length > 0 ? RefreshIndicator(
+        return orderController.completedOrderList != null ? orderController.completedOrderList.length > 0 ? RefreshIndicator(
           onRefresh: () async {
             await orderController.getCompletedOrders(1);
           },
@@ -40,11 +40,11 @@ class OrderScreen extends StatelessWidget {
               child: Column(children: [
                 ListView.builder(
                   padding: EdgeInsets.all(Dimensions.PADDING_SIZE_SMALL),
-                  itemCount: orderController.completedOrderList!.length,
+                  itemCount: orderController.completedOrderList.length,
                   physics: NeverScrollableScrollPhysics(),
                   shrinkWrap: true,
                   itemBuilder: (context, index) {
-                    return HistoryOrderWidget(orderModel: orderController.completedOrderList![index], isRunning: false, index: index);
+                    return HistoryOrderWidget(orderModel: orderController.completedOrderList[index], isRunning: false, index: index);
                   },
                 ),
                 orderController.paginate ? Center(child: Padding(

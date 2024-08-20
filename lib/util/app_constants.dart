@@ -5,7 +5,7 @@ class AppConstants {
   static const String APP_NAME = 'Atayer Delivery';
   static const double APP_VERSION = 1.4;
 
-  static const String BASE_URL = 'https://lest.lisre.online';
+  static const String BASE_URL = 'https://atayr.stoor.online';
   static const String CONFIG_URI = '/api/v1/config';
   static const String FORGET_PASSWORD_URI = '/api/v1/auth/delivery-man/forgot-password';
   static const String VERIFY_TOKEN_URI = '/api/v1/auth/delivery-man/verify-token';
@@ -48,7 +48,6 @@ class AppConstants {
   // Status
   static const String PENDING = 'pending';
   static const String CONFIRMED = 'confirmed';
-  static const String canceled = 'canceled';
   static const String ACCEPTED = 'accepted';
   static const String PROCESSING = 'processing';
   static const String HANDOVER = 'handover';

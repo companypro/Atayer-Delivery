@@ -54,7 +54,7 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
             ClipOval(child: authController.pickedFile != null ? Image.memory(
               authController.pickedFile!, width: 100, height: 100, fit: BoxFit.cover,
             ) : CustomImage(
-              image: '${Get.find<SplashController>().configModel!.baseUrls?.deliveryManImageUrl}/${authController.profileModel!.image}',
+              image: '${Get.find<SplashController>().configModel!.baseUrls!.deliveryManImageUrl}/${authController.profileModel!.image}',
               height: 100, width: 100, fit: BoxFit.cover,
             )),
             Positioned(

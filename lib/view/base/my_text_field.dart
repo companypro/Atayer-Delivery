@@ -48,7 +48,7 @@ class _MyTextFieldState extends State<MyTextField> {
     return Container(
       decoration: BoxDecoration(
         boxShadow: [BoxShadow(color: Colors.grey[Get.isDarkMode ? 800 : 200]!, spreadRadius: 2, blurRadius: 5, offset: Offset(0, 5))],
-       ),
+      ),
       child: TextField(
         maxLines: widget.maxLines,
         controller: widget.controller,

@@ -66,7 +66,7 @@ class _VerificationScreenState extends State<VerificationScreen> {
               'for_demo_purpose'.tr, style: robotoRegular,
             ) : RichText(text: TextSpan(children: [
               TextSpan(text: 'enter_the_verification_sent_to'.tr, style: robotoRegular.copyWith(color: Theme.of(context).disabledColor)),
-              TextSpan(text: ' $_number', style: robotoMedium.copyWith(color: Theme.of(context).textTheme.bodyLarge?.color)),
+              TextSpan(text: ' $_number', style: robotoMedium.copyWith(color: Theme.of(context).textTheme.bodyLarge!.color)),
             ])),
 
             Padding(

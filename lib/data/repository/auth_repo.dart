@@ -47,7 +47,7 @@ class AuthRepo {
   }
 
   Future<Response> updateToken() async {
-   late String _deviceToken;
+    late String _deviceToken;
     if (GetPlatform.isIOS) {
       FirebaseMessaging.instance.setForegroundNotificationPresentationOptions(alert: true, badge: true, sound: true);
       NotificationSettings settings = await FirebaseMessaging.instance.requestPermission(

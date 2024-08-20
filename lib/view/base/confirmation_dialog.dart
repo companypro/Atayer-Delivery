@@ -5,101 +5,74 @@ import 'package:sixam_mart_delivery/view/base/custom_button.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-import 'custom_text_field.dart';
-
 class ConfirmationDialog extends StatelessWidget {
   final String icon;
   final double iconSize;
-  final String title;
+   String? title;
   final String description;
   final Function onYesPressed;
-  final Function onNoPressed;
   final bool isLogOut;
   final bool hasCancel;
   ConfirmationDialog({
-    required this.icon,
-    this.iconSize = 50,
-    required this.title,
-    required this.description,
-    required this.onYesPressed,
-    this.isLogOut = false,
-    this.hasCancel = true,  required this.onNoPressed,
+    required this.icon, this.iconSize = 50, this.title, required this.description, required this.onYesPressed,
+    this.isLogOut = false, this.hasCancel = true,
   });
 
   @override
   Widget build(BuildContext context) {
     return Dialog(
-      shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(Dimensions.RADIUS_SMALL)),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(Dimensions.RADIUS_SMALL)),
       child: Padding(
         padding: EdgeInsets.all(Dimensions.PADDING_SIZE_LARGE),
         child: Column(mainAxisSize: MainAxisSize.min, children: [
+
           Padding(
             padding: EdgeInsets.all(Dimensions.PADDING_SIZE_LARGE),
             child: Image.asset(icon, width: iconSize, height: iconSize),
           ),
-          title != null
-              ? Padding(
-                  padding: EdgeInsets.symmetric(
-                      horizontal: Dimensions.PADDING_SIZE_LARGE),
-                  child: Text(
-                    title,
-                    textAlign: TextAlign.center,
-                    style: robotoMedium.copyWith(
-                        fontSize: Dimensions.FONT_SIZE_EXTRA_LARGE,
-                        color: Colors.red),
-                  ),
-                )
-              : SizedBox(),
+
+          title != null ? Padding(
+            padding: EdgeInsets.symmetric(horizontal: Dimensions.PADDING_SIZE_LARGE),
+            child: Text(
+              title!, textAlign: TextAlign.center,
+              style: robotoMedium.copyWith(fontSize: Dimensions.FONT_SIZE_EXTRA_LARGE, color: Colors.red),
+            ),
+          ) : SizedBox(),
 
           Padding(
             padding: EdgeInsets.all(Dimensions.PADDING_SIZE_SMALL),
-            child: Text(description,
-                style:
-                    robotoMedium.copyWith(fontSize: Dimensions.FONT_SIZE_LARGE),
-                textAlign: TextAlign.center),
+            child: Text(description, style: robotoMedium.copyWith(fontSize: Dimensions.FONT_SIZE_LARGE), textAlign: TextAlign.center),
           ),
           SizedBox(height: Dimensions.PADDING_SIZE_LARGE),
+
           GetBuilder<OrderController>(builder: (orderController) {
-            return !orderController.isLoading
-                ? Row(children: [
-              Expanded(
-                  child: CustomButton(
-                    buttonText: 'yes'.tr,
-                    onPressed: () =>  onYesPressed(),
-                    height: 40,
-                  )),
+            return !orderController.isLoading ? Row(children: [
+              hasCancel ? Expanded(child: TextButton(
+                onPressed: () => isLogOut ? onYesPressed() : Get.back(),
+                style: TextButton.styleFrom(
+                  backgroundColor: Theme.of(context).disabledColor.withOpacity(0.3), minimumSize: Size(1170, 40), padding: EdgeInsets.zero,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(Dimensions.RADIUS_SMALL)),
+                ),
+                child: Text(
+                  'no'.tr ,
+                  textAlign: TextAlign.center,
+                  style: robotoBold.copyWith(
+                      color: Theme.of(context)
+                          .textTheme
+                          .bodyLarge
+                          ?.color),
+                ),
+              )) : SizedBox(),
+              SizedBox(width: hasCancel ? Dimensions.PADDING_SIZE_LARGE : 0),
 
-                    SizedBox(
-                        width: hasCancel ? Dimensions.PADDING_SIZE_LARGE : 0),
-              Expanded(
-                  child: TextButton(
-                    onPressed: () =>
-                        onNoPressed(),
-                    style: TextButton.styleFrom(
-                      backgroundColor: Theme.of(context)
-                          .disabledColor
-                          .withOpacity(0.3),
-                      minimumSize: Size(1170, 40),
-                      padding: EdgeInsets.zero,
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(
-                              Dimensions.RADIUS_SMALL)),
-                    ),
-                    child: Text(
-                      'no'.tr ,
-                      textAlign: TextAlign.center,
-                      style: robotoBold.copyWith(
-                          color: Theme.of(context)
-                              .textTheme
-                              .bodyLarge
-                              ?.color),
-                    ),
-                  )),
-
-            ])
-                : Center(child: CircularProgressIndicator());
+              Expanded(child: CustomButton(
+                buttonText: isLogOut ? 'no'.tr : hasCancel ? 'yes'.tr : 'ok'.tr,
+                onPressed: () => isLogOut ? Get.back() : onYesPressed(),
+                height: 40,
+              )),
+            ]) : Center(child: CircularProgressIndicator());
           }),
+
         ]),
       ),
     );

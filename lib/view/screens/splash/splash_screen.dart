@@ -78,7 +78,6 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xFF007058),
       key: _globalKey,
       body: Center(
         child: Padding(
@@ -88,7 +87,7 @@ class _SplashScreenState extends State<SplashScreen> {
             // SizedBox(height: Dimensions.PADDING_SIZE_LARGE),
             //Text(AppConstants.APP_NAME, style: robotoMedium.copyWith(fontSize: 25), textAlign: TextAlign.center),
             SizedBox(height: Dimensions.PADDING_SIZE_SMALL),
-            // Text('suffix_name'.tr, style: robotoMedium, textAlign: TextAlign.center),
+            Text('suffix_name'.tr, style: robotoMedium, textAlign: TextAlign.center),
           ]),
         ),
       ),

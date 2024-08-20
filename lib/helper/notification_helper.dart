@@ -27,8 +27,8 @@ class NotificationHelper {
         _orderID = message.data['order_id'];
         _image = (message.data['image'] != null && message.data['image'].isNotEmpty)
             ? message.data['image'].startsWith('http')
-                ? message.data['image']
-                : '${AppConstants.BASE_URL}/storage/app/public/notification/${message.data['image']}'
+            ? message.data['image']
+            : '${AppConstants.BASE_URL}/storage/app/public/notification/${message.data['image']}'
             : null;
       } else {
         _title = message.notification?.title;
@@ -37,14 +37,14 @@ class NotificationHelper {
         if (GetPlatform.isAndroid) {
           _image = (message.notification?.android?.imageUrl != null && message.notification!.android!.imageUrl!.isNotEmpty)
               ? message.notification!.android!.imageUrl!.startsWith('http')
-                  ? message.notification!.android!.imageUrl
-                  : '${AppConstants.BASE_URL}/storage/app/public/notification/${message.notification!.android!.imageUrl}'
+              ? message.notification!.android!.imageUrl
+              : '${AppConstants.BASE_URL}/storage/app/public/notification/${message.notification!.android!.imageUrl}'
               : null;
         } else if (GetPlatform.isIOS) {
           _image = (message.notification!.apple!.imageUrl != null && message.notification!.apple!.imageUrl!.isNotEmpty)
               ? message.notification!.apple!.imageUrl!.startsWith('http')
-                  ? message.notification!.apple!.imageUrl
-                  : '${AppConstants.BASE_URL}/storage/app/public/notification/${message.notification!.apple!.imageUrl}'
+              ? message.notification!.apple!.imageUrl
+              : '${AppConstants.BASE_URL}/storage/app/public/notification/${message.notification!.apple!.imageUrl}'
               : null;
         }
       }

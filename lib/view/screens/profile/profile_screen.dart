@@ -42,7 +42,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ),
             alignment: Alignment.center,
             child: ClipOval(child: CustomImage(
-              image: '${Get.find<SplashController>().configModel!.baseUrls?.deliveryManImageUrl}'
+              image: '${Get.find<SplashController>().configModel!.baseUrls!.deliveryManImageUrl}'
                   '/${authController.profileModel != null ? authController.profileModel!.image : ''}',
               height: 100, width: 100, fit: BoxFit.cover,
             )),
@@ -108,7 +108,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 onTap: () {
                   Get.dialog(ConfirmationDialog(icon: Images.warning, title: 'are_you_sure_to_delete_account'.tr,
                       description: 'it_will_remove_your_all_information'.tr, isLogOut: true,
-                      onYesPressed: () => authController.removeDriver(), onNoPressed: (){},),
+                      onYesPressed: () => authController.removeDriver()),
                       useSafeArea: false);
                 },
               ),
@@ -120,7 +120,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   Get.find<AuthController>().clearSharedData();
                   Get.find<AuthController>().stopLocationRecord();
                   Get.offAllNamed(RouteHelper.getSignInRoute());
-                }, title: '',  onNoPressed: (){},));
+                }));
               }),
               SizedBox(height: Dimensions.PADDING_SIZE_LARGE),
 
