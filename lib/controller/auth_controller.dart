@@ -16,7 +16,7 @@ import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:geocoding/geocoding.dart' as GeoCoding;
+// import 'package:geocoding/geocoding.dart' as GeoCoding; 11111111111111111111111111111111111111111111111111111111111111111111111111111111
 import 'package:location/location.dart';
 
 class AuthController extends GetxController implements GetxService {
@@ -61,19 +61,25 @@ class AuthController extends GetxController implements GetxService {
       _profileModel = ProfileModel.fromJson(response.body);
       if (_profileModel!.active == 1) {
         LocationPermission permission = await Geolocator.checkPermission();
-        if(permission == LocationPermission.denied || permission == LocationPermission.deniedForever
-            || (GetPlatform.isIOS ? false : permission == LocationPermission.whileInUse)) {
-          Get.dialog(ConfirmationDialog(
-            icon: Images.location_permission,
-            iconSize: 200,
-            hasCancel: false,
-            description: 'this_app_collects_location_data'.tr,
-            onYesPressed: () {
-              Get.back();
-              _checkPermission(() => startLocationRecord());
-            },
-          ), barrierDismissible: false);
-        }else {
+        if (permission == LocationPermission.denied ||
+            permission == LocationPermission.deniedForever ||
+            (GetPlatform.isIOS
+                ? false
+                : permission == LocationPermission.whileInUse)) {
+          Get.dialog(
+              ConfirmationDialog(
+                icon: Images.location_permission,
+                iconSize: 200,
+                hasCancel: false,
+                description: 'this_app_collects_location_data'.tr,
+                onYesPressed: () {
+                  Get.back();
+                  _checkPermission(() => startLocationRecord());
+                },
+                title: '',
+              ),
+              barrierDismissible: false);
+        } else {
           startLocationRecord();
         }
       } else {
@@ -85,10 +91,12 @@ class AuthController extends GetxController implements GetxService {
     update();
   }
 
-  Future<bool> updateUserInfo(ProfileModel updateUserModel, String token) async {
+  Future<bool> updateUserInfo(
+      ProfileModel updateUserModel, String token) async {
     _isLoading = true;
     update();
-    Response response = await authRepo.updateProfile(updateUserModel, _pickedFile!, token);
+    Response response =
+    await authRepo.updateProfile(updateUserModel, _pickedFile!, token);
     _isLoading = false;
     bool _isSuccess;
     if (response.statusCode == 200) {
@@ -105,17 +113,19 @@ class AuthController extends GetxController implements GetxService {
 
   void pickImage() async {
     XFile? _picked = await ImagePicker().pickImage(source: ImageSource.gallery);
-    if(_picked != null) {
+    if (_picked != null) {
       _pickedFile = await NetworkInfo.compressImage(_picked);
     }
     update();
   }
 
-  Future<bool> changePassword(ProfileModel updatedUserModel, String password) async {
+  Future<bool> changePassword(
+      ProfileModel updatedUserModel, String password) async {
     _isLoading = true;
     update();
     bool _isSuccess;
-    Response response = await authRepo.changePassword(updatedUserModel, password);
+    Response response =
+    await authRepo.changePassword(updatedUserModel, password);
     _isLoading = false;
     if (response.statusCode == 200) {
       String message = response.body["message"];
@@ -138,19 +148,25 @@ class AuthController extends GetxController implements GetxService {
       _isSuccess = true;
       if (_profileModel!.active == 1) {
         LocationPermission permission = await Geolocator.checkPermission();
-        if(permission == LocationPermission.denied || permission == LocationPermission.deniedForever
-            || (GetPlatform.isIOS ? false : permission == LocationPermission.whileInUse)) {
-          Get.dialog(ConfirmationDialog(
-            icon: Images.location_permission,
-            iconSize: 200,
-            hasCancel: false,
-            description: 'this_app_collects_location_data'.tr,
-            onYesPressed: () {
-              Get.back();
-              _checkPermission(() => startLocationRecord());
-            },
-          ), barrierDismissible: false);
-        }else {
+        if (permission == LocationPermission.denied ||
+            permission == LocationPermission.deniedForever ||
+            (GetPlatform.isIOS
+                ? false
+                : permission == LocationPermission.whileInUse)) {
+          Get.dialog(
+              ConfirmationDialog(
+                icon: Images.location_permission,
+                iconSize: 200,
+                hasCancel: false,
+                description: 'this_app_collects_location_data'.tr,
+                onYesPressed: () {
+                  Get.back();
+                  _checkPermission(() => startLocationRecord());
+                },
+                title: '',
+              ),
+              barrierDismissible: false);
+        } else {
           startLocationRecord();
         }
       } else {
@@ -179,17 +195,23 @@ class AuthController extends GetxController implements GetxService {
 
   Future<void> recordLocation() async {
     final LocationData _locationResult = await _location.getLocation();
-    print('This is current Location: Latitude: ${_locationResult.latitude} Longitude: ${_locationResult.longitude}');
+    print(
+        'This is current Location: Latitude: ${_locationResult.latitude} Longitude: ${_locationResult.longitude}');
     String _address;
-    try{
-      List<GeoCoding.Placemark> _addresses = await GeoCoding.placemarkFromCoordinates(_locationResult.latitude!, _locationResult.longitude!);
-      GeoCoding.Placemark _placeMark = _addresses.first;
-      _address = '${_placeMark.name}, ${_placeMark.subAdministrativeArea}, ${_placeMark.isoCountryCode}';
-    }catch(e) {
+    try {
+      // List<GeoCoding.Placemark> _addresses =     11111111111111111111111111111111111111111111111111111111111111111111111111111111
+      //     await GeoCoding.placemarkFromCoordinates( 11111111111111111111111111111111111111111111111111111111111111111111111111111111
+      //         _locationResult.latitude!, _locationResult.longitude!);11111111111111111111111111111111111111111111111111111111111111111111111111111111
+      // GeoCoding.Placemark _placeMark = _addresses.first;11111111111111111111111111111111111111111111111111111111111111111111111111111111
+      // _address =11111111111111111111111111111111111111111111111111111111111111111111111111111111
+      //     '${_placeMark.name}, ${_placeMark.subAdministrativeArea}, ${_placeMark.isoCountryCode}';11111111111111111111111111111111111111111111111111111111111111111111111111111111
+    } catch (e) {
       _address = 'Unknown Location Found';
     }
     RecordLocationBody _recordLocation = RecordLocationBody(
-      location: _address, latitude: _locationResult.latitude!, longitude: _locationResult.longitude!,
+      // location: _address,11111111111111111111111111111111111111111111111111111111111111111111111111111111
+      latitude: _locationResult.latitude,
+      longitude: _locationResult.longitude,
     );
 
     await authRepo.recordLocation(_recordLocation);
@@ -230,10 +252,12 @@ class AuthController extends GetxController implements GetxService {
     return responseModel;
   }
 
-  Future<ResponseModel> resetPassword(String resetToken, String phone, String password, String confirmPassword) async {
+  Future<ResponseModel> resetPassword(String resetToken, String phone,
+      String password, String confirmPassword) async {
     _isLoading = true;
     update();
-    Response response = await authRepo.resetPassword(resetToken, phone, password, confirmPassword);
+    Response response = await authRepo.resetPassword(
+        resetToken, phone, password, confirmPassword);
     ResponseModel responseModel;
     if (response.statusCode == 200) {
       responseModel = ResponseModel(true, response.body["message"]);
@@ -254,7 +278,6 @@ class AuthController extends GetxController implements GetxService {
     update();
   }
 
-
   bool _isActiveRememberMe = false;
 
   bool get isActiveRememberMe => _isActiveRememberMe;
@@ -272,7 +295,8 @@ class AuthController extends GetxController implements GetxService {
     return await authRepo.clearSharedData();
   }
 
-  void saveUserNumberAndPassword(String number, String password, String countryCode) {
+  void saveUserNumberAndPassword(
+      String number, String password, String countryCode) {
     authRepo.saveUserNumberAndPassword(number, password, countryCode);
   }
 
@@ -304,26 +328,36 @@ class AuthController extends GetxController implements GetxService {
   }
 
   void initData() {
-    _pickedFile = null;
+    _pickedFile = _pickedFile;
   }
 
   void _checkPermission(Function callback) async {
     LocationPermission permission = await Geolocator.requestPermission();
     permission = await Geolocator.checkPermission();
-    if(permission == LocationPermission.denied
-        || (GetPlatform.isIOS ? false : permission == LocationPermission.whileInUse)) {
-      Get.dialog(CustomAlertDialog(description: 'you_denied'.tr, onOkPressed: () async {
-        Get.back();
-        await Geolocator.requestPermission();
-        _checkPermission(callback);
-      }), barrierDismissible: false);
-    }else if(permission == LocationPermission.deniedForever) {
-      Get.dialog(CustomAlertDialog(description: 'you_denied_forever'.tr, onOkPressed: () async {
-        Get.back();
-        await Geolocator.openAppSettings();
-        _checkPermission(callback);
-      }), barrierDismissible: false);
-    }else {
+    if (permission == LocationPermission.denied ||
+        (GetPlatform.isIOS
+            ? false
+            : permission == LocationPermission.whileInUse)) {
+      Get.dialog(
+          CustomAlertDialog(
+              description: 'you_denied'.tr,
+              onOkPressed: () async {
+                Get.back();
+                await Geolocator.requestPermission();
+                _checkPermission(callback);
+              }),
+          barrierDismissible: false);
+    } else if (permission == LocationPermission.deniedForever) {
+      Get.dialog(
+          CustomAlertDialog(
+              description: 'you_denied_forever'.tr,
+              onOkPressed: () async {
+                Get.back();
+                await Geolocator.openAppSettings();
+                _checkPermission(callback);
+              }),
+          barrierDismissible: false);
+    } else {
       callback();
     }
   }
@@ -338,10 +372,9 @@ class AuthController extends GetxController implements GetxService {
       Get.find<AuthController>().clearSharedData();
       Get.find<AuthController>().stopLocationRecord();
       Get.offAllNamed(RouteHelper.getSignInRoute());
-    }else{
+    } else {
       Get.back();
       ApiChecker.checkApi(response);
     }
   }
-
 }
